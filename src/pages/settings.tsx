@@ -1,4 +1,11 @@
-function Settings() {
+import { z } from "zod";
+
+import type { settingsSchema } from "./settings";
+
+export function Settings({
+  isLightMode,
+  toggleIsLightMode,
+}: z.infer<typeof settingsSchema>) {
   return (
     <>
       <header className="header">
@@ -6,15 +13,13 @@ function Settings() {
       </header>
 
       <section className="card">
-        <h2>Overview</h2>
-        <p>
-          This is a sample card component. It demonstrates the full styling from
-          your CSS boilerplate including typography, button styles, and
-          responsive design.
-        </p>
+        <button
+          onClick={() => toggleIsLightMode((prev) => !prev)}
+          style={{ margin: "1rem 0", padding: "0.5rem 1rem" }}
+        >
+          Toggle {isLightMode ? "Dark" : "Light"} Mode
+        </button>
       </section>
     </>
   );
 }
-
-export default Settings;
