@@ -64,13 +64,17 @@ body {
   padding: 20px;
 }
 
-.sidebar .content .toggle-btn {
+.sidebar .toggle-btn {
   padding-bottom: 20px;
   cursor: pointer;
   width: 1rem;
   left: 0;
   right: 0;
   margin: 0 auto;
+}
+
+.sidebar .menu-item {
+  display: block;
 }
 
 .sidebar.collapsed {
@@ -90,7 +94,8 @@ body {
 }
 
 .content-overlay {
-  opacity: 0.5;
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
 }
 
 .content {

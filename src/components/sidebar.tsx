@@ -1,12 +1,21 @@
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { z } from "zod";
 
-export function Sidebar({ isCollapsed, toggleSidebar }) {
-  const sidebarRef = useRef(null);
+import type { sidebarSchema } from "./sidebar";
+
+export function Sidebar({
+  isCollapsed,
+  toggleSidebar,
+}: z.infer<typeof sidebarSchema>) {
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target as Node)
+      ) {
         if (!isCollapsed) {
           toggleSidebar();
         }
@@ -35,12 +44,7 @@ export function Sidebar({ isCollapsed, toggleSidebar }) {
         </div>
         <nav>
           {menuItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className="menu-item"
-              style={{ display: isCollapsed ? "none" : "block" }}
-            >
+            <Link key={item.path} to={item.path} className="menu-item">
               <span>{item.title}</span>
             </Link>
           ))}

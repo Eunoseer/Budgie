@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Sidebar } from "./components/sidebar";
+
+import { Sidebar } from "./components/sidebar.tsx";
 import Dashboard from "./pages/dashboard";
 import Settings from "./pages/settings";
 import "./App.css";
 
 function App() {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   return (
     <BrowserRouter>

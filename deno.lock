@@ -15,7 +15,8 @@
     "npm:typescript-eslint@^8.46.4": "8.54.0_eslint@9.39.2_typescript@5.9.3_@typescript-eslint+parser@8.54.0__eslint@9.39.2__typescript@5.9.3",
     "npm:typescript@~5.9.3": "5.9.3",
     "npm:vite-plugin-pwa@^1.2.0": "1.2.0_vite@7.3.1__@types+node@24.10.12__picomatch@4.0.3_workbox-build@7.4.0__ajv@8.17.1__@babel+core@7.29.0__rollup@2.79.2_workbox-window@7.4.0_@types+node@24.10.12",
-    "npm:vite@^7.2.4": "7.3.1_@types+node@24.10.12_picomatch@4.0.3"
+    "npm:vite@^7.2.4": "7.3.1_@types+node@24.10.12_picomatch@4.0.3",
+    "npm:zod@^4.3.6": "4.3.6"
   },
   "npm": {
     "@apideck/better-ajv-errors@0.3.6_ajv@8.17.1": {
@@ -3380,7 +3381,8 @@
         "npm:typescript-eslint@^8.46.4",
         "npm:typescript@~5.9.3",
         "npm:vite-plugin-pwa@^1.2.0",
-        "npm:vite@^7.2.4"
+        "npm:vite@^7.2.4",
+        "npm:zod@^4.3.6"
       ]
     }
   }
