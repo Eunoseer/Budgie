@@ -22,6 +22,12 @@ function App() {
             <Route path="/settings" element={<Settings />} />
           </Routes>
         </main>
+        <footer className="footer">
+          <a href="https://github.com/Eunoseer/Budgie">
+            <img src="./github.svg" alt="github"></img>
+            &nbsp;Github - Budgie
+          </a>
+        </footer>
       </div>
     </BrowserRouter>
   );

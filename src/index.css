@@ -106,6 +106,7 @@ body {
   flex-direction: column;
   overflow: hidden;
   padding-left: 80px;
+  padding-bottom: 1.9rem;
 }
 
 .content .header {
@@ -196,7 +197,20 @@ select:focus {
   margin-bottom: 20px;
 }
 
+.footer {
+  position: fixed;
+  max-width: 1280px;
+  margin: auto;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  z-index: 10;
+  text-align: center;
+}
 
-
-
-
+.footer img {
+  width: var(--font-size);
+}
