@@ -65,7 +65,7 @@ function App() {
         <footer className="footer">
           <a href="https://github.com/Eunoseer/Budgie">
             <img src="./github.svg" alt="github"></img>
-            &nbsp;Github - Budgie
+            &nbsp;Github - Budgie - 2026
           </a>
         </footer>
       </div>
