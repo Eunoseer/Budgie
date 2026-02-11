@@ -140,6 +140,24 @@ body {
   min-height: 100vh;
 }
 
+.localModeSelector {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+  margin: 0 auto;
+  width: fit-content;
+}
+
+.localModeSelector label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .container {

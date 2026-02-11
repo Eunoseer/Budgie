@@ -6,40 +6,42 @@ import Dashboard from "./pages/dashboard.tsx";
 import { Settings } from "./pages/settings.tsx";
 import "./App.css";
 
+function getPreferredMode(): "light" | "dark" {
+  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  return mediaQuery.matches ? "dark" : "light";
+}
+
 function App() {
   const [isCollapsed, setIsCollapsed] = useState(true);
-  const [isLightMode, setIsLightMode] = useState(() => {
-    const savedMode = localStorage.getItem("lightMode") === "true";
-    const systemPrefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)",
-    ).matches;
-    return savedMode ? savedMode : systemPrefersDark ? false : true;
+  const [localMode, setLocalMode] = useState(() => {
+    const savedMode = localStorage.getItem("localMode");
+    return savedMode || getPreferredMode();
   });
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const handler = (e) => {
-      const savedMode = localStorage.getItem("lightMode") === "true";
+    const handler = (e: MediaQueryListEvent) => {
+      const savedMode = localStorage.getItem("localMode");
       const systemPrefersDark = e.matches;
       const currentMode = savedMode
         ? savedMode
         : systemPrefersDark
-          ? false
-          : true;
-      setIsLightMode(currentMode);
+          ? "dark"
+          : "light";
+      setLocalMode(currentMode);
     };
     mediaQuery.addEventListener("change", handler);
     return () => mediaQuery.removeEventListener("change", handler);
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("lightMode", isLightMode.toString());
-    if (isLightMode) {
+    localStorage.setItem("localMode", localMode);
+    if (localMode === "light") {
       document.body.classList.add("light-mode");
     } else {
       document.body.classList.remove("light-mode");
     }
-  }, [isLightMode]);
+  }, [localMode]);
 
   return (
     <BrowserRouter>
@@ -55,8 +57,8 @@ function App() {
               path="/settings"
               element={
                 <Settings
-                  isLightMode={isLightMode}
-                  toggleIsLightMode={() => setIsLightMode(!isLightMode)}
+                  localMode={localMode}
+                  setLocalMode={(mode) => setLocalMode(mode)}
                 />
               }
             />

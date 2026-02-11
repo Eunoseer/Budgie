@@ -1,9 +1,11 @@
 import { z } from "zod";
 
+export type localModesType = "system" | "light" | "dark";
+
 export const settingsSchema = z.object({
-  isLightMode: z.boolean(),
-  toggleIsLightMode: z.function({
-    input: [z.function({ input: [z.boolean()], output: z.boolean() })],
+  localMode: z.union([z.string()]),
+  setLocalMode: z.function({
+    input: [z.string()],
     output: z.void(),
   }),
 });
