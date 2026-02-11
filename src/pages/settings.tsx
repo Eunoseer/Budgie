@@ -19,7 +19,7 @@ export function Settings({
 
       <section className="card">
         <form className="localModeSelector">
-          <label>Display Mode:</label>
+          <label>Display Mode</label>
           <label>
             <input
               type="radio"

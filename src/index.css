@@ -146,7 +146,8 @@ body {
   gap: 1rem;
   align-items: center;
   margin: 0 auto;
-  width: fit-content;
+  width: 100%;
+  justify-content: center;
 }
 
 .localModeSelector label {
@@ -162,6 +163,31 @@ body {
 @media (max-width: 768px) {
   .container {
     flex-direction: column;
+  }
+
+  .localModeSelector {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .localModeSelector label {
+    display: flex;
+    flex-direction: row;
+    padding: 12px;
+    gap: 8px;
+    width: 100%;
+  }
+  
+  .localModeSelector label input[type="radio"] {
+    width: 16px;
+    flex-shrink: 0;
+    margin-bottom: auto;
+  }
+  
+  .localModeSelector label span {
+    flex: 1;
+    white-space: nowrap;
   }
 }
 
