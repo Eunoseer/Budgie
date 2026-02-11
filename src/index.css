@@ -11,6 +11,7 @@
   --color-button-hover: #3a3a3a;
   --color-button-focus: #646cff;
   --color-button-text: #f3f3f3;
+  --color-error: #e53e3e;
 }
 
 /* Light mode */
@@ -35,6 +36,14 @@ body {
   background-color: var(--color-bg);
   display: flex;
   min-height: 100vh;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100% - 2rem;
+  margin: 0 2rem;
 }
 
 .container {
@@ -220,8 +229,8 @@ button:hover {
 
 button:focus,
 button:focus-visible {
-  outline: 4px auto var(--color-button-focus);
-  outline-offset: 4px;
+  background-color: var(--color-button-focus);
+  transition: background-color 0.1s ease;
 }
 
 /* Link styles */
@@ -276,6 +285,50 @@ select:focus {
   z-index: 10;
   text-align: center;
 }
+
+/* Keyword Component */
+.keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.keywordsError {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  user-select: none;
+  min-height: 20px;
+  padding: 4px 8px;
+  margin: 4px 0;
+  color: var(--color-error);
+  white-space: nowrap;
+}
+
+.keywordsError.show {
+  opacity: 1;
+  pointer-events: auto;
+  user-select: auto;
+}
+
+.keywords span {
+  background: var(--color-bg);
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.keywords span button {
+  margin-left: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* footer */
 
 .footer img {
   width: var(--font-size);

@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { settingsSchema } from "./settings";
 import type { localModesType } from "./settings";
+import { Keywords } from "../components/keywords";
 
 export function Settings({
   localMode,
@@ -51,6 +52,11 @@ export function Settings({
             Dark
           </label>
         </form>
+      </section>
+
+      <section className="card">
+        <h2>Keywords</h2>
+        <Keywords type={"test"} />
       </section>
     </>
   );
