@@ -3,7 +3,13 @@ import { useState, useEffect } from "react";
 import { Button } from "./button";
 import type { keywordTypes } from "./keywords";
 
-export function Keywords({ type }: { type: keywordTypes }) {
+export function Keywords({
+  type,
+  placeholder,
+}: {
+  type: keywordTypes;
+  placeholder?: string;
+}) {
   const [isDuplicate, setIsDuplicate] = useState(false);
   const [keywords, setKeywords] = useState<string[]>(() => {
     const saved = localStorage.getItem(type);
@@ -36,7 +42,10 @@ export function Keywords({ type }: { type: keywordTypes }) {
   return (
     <>
       <form onSubmit={addKeyword}>
-        <input type="text" placeholder="Enter keyword" />
+        <input
+          type="text"
+          placeholder={placeholder ? placeholder : "Enter keyword"}
+        />
         <Button type="submit">Add</Button>
         <p className={`keywordsError ${isDuplicate ? "show" : ""}`}>
           Value already exists

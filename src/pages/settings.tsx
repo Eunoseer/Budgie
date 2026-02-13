@@ -56,7 +56,7 @@ export function Settings({
 
       <section className="card">
         <h2>Keywords</h2>
-        <Keywords type={"test"} />
+        <Keywords type={"test"} placeholder={"Enter test value"} />
       </section>
     </>
   );
