@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 
 import { Button } from "./button";
+import type { keywordTypes } from "./keywords";
 
-export function Keywords(type: "test") {
+export function Keywords({ type }: { type: keywordTypes }) {
   const [isDuplicate, setIsDuplicate] = useState(false);
   const [keywords, setKeywords] = useState<string[]>(() => {
     const saved = localStorage.getItem(type);

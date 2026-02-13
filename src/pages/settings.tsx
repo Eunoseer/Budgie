@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { settingsSchema } from "./settings";
 import type { localModesType } from "./settings";
-import { Keywords } from "../components/keywords";
+import { Keywords } from "../components/keywords.tsx";
 
 export function Settings({
   localMode,
