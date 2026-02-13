@@ -4,6 +4,7 @@ import { settingsSchema } from "./settings";
 import type { localModesType } from "./settings";
 import { Keywords } from "../components/keywords.tsx";
 import { initialAccountNames, initialPaymentCategories } from "../App.ts";
+import { ContentManager } from "../components/contentManager.tsx";
 
 export function Settings({
   localMode,
@@ -71,6 +72,11 @@ export function Settings({
           placeholder={"Enter payment category"}
           initialValues={initialPaymentCategories}
         />
+      </section>
+
+      <section className="card">
+        <h2>Manage Configuration</h2>
+        <ContentManager />
       </section>
     </>
   );

@@ -1,21 +1,33 @@
 import React, { useEffect, useRef } from "react";
 
-interface ButtonProps {
+interface ButtonProps extends React.PropsWithChildren {
   children: React.ReactNode;
   onClick?: () => void;
-  type?: "submit" | "reset" | "button";
+  type?: "submit" | "reset" | "button" | "reset";
+  className?: string;
 }
 
-export const Button: React.FC<ButtonProps> = ({ children, onClick, type }) => {
+export const Button: React.FC<ButtonProps> = ({
+  children,
+  onClick,
+  type = "button",
+  className = "",
+}) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handleClick = () => {
       const button = buttonRef.current;
       if (button) {
-        button.style.backgroundColor = "var(--color-button-focus)";
+        let focusColour = "var(--color-button-focus)";
+        let bgColour = "var(--color-button-bg)";
+        if (type === "reset") {
+          focusColour = "var(--color-button-bg)";
+          bgColour = "var(--color-error)";
+        }
+        button.style.backgroundColor = focusColour;
         setTimeout(() => {
-          button.style.backgroundColor = "var(--color-button-bg)";
+          button.style.backgroundColor = bgColour;
         }, 300);
       }
     };
@@ -34,7 +46,7 @@ export const Button: React.FC<ButtonProps> = ({ children, onClick, type }) => {
   }, []);
 
   return (
-    <button ref={buttonRef} onClick={onClick} type={type}>
+    <button ref={buttonRef} onClick={onClick} type={type} className={className}>
       {children}
     </button>
   );

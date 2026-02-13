@@ -7,11 +7,13 @@
   --color-content-bg: #181818;
   --color-link: #646cff;
   --color-link-hover: #535bf2;
-  --color-button-bg: #1a1a1a;
+  --color-button-bg: #2a2a2a;
   --color-button-hover: #3a3a3a;
   --color-button-focus: #646cff;
   --color-button-text: #f3f3f3;
   --color-error: #e53e3e;
+  --color-warning: #FFBF00;
+  --color-success: #228B22;
 }
 
 /* Light mode */
@@ -233,6 +235,21 @@ button:focus-visible {
   transition: background-color 0.1s ease;
 }
 
+/* Reset Button Styles */
+.resetContainer {
+  padding-top: 1rem;
+}
+
+.resetButton {
+  background-color: var(--color-error);
+}
+
+.resetButton button:focus,
+.resetButton button:focus-visible {
+  background-color: var(--color-button-bg);
+  transition: background-color 0.1s ease;
+}
+
 /* Link styles */
 a {
   color: var(--color-link);
@@ -294,26 +311,8 @@ select:focus {
   margin-top: 8px;
 }
 
-.keywordsError {
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-  user-select: none;
-  min-height: 20px;
-  padding: 4px 8px;
-  margin: 4px 0;
-  color: var(--color-error);
-  white-space: nowrap;
-}
-
-.keywordsError.show {
-  opacity: 1;
-  pointer-events: auto;
-  user-select: auto;
-}
-
 .keywords span {
-  background: var(--color-bg);
+  background: var(--color-button-bg);
   padding: 4px 8px;
   border-radius: 4px;
   display: inline-flex;
@@ -326,6 +325,49 @@ select:focus {
   border: none;
   cursor: pointer;
   padding: 0;
+}
+
+/* Validation Message */
+.error {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  user-select: none;
+  min-height: 20px;
+  padding: 4px 8px;
+  margin: 4px 0;
+  color: var(--color-error);
+  white-space: nowrap;
+}
+
+.success {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  user-select: none;
+  min-height: 20px;
+  padding: 4px 8px;
+  margin: 4px 0;
+  color: var(--color-warning);
+  white-space: nowrap;
+}
+
+.success {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  user-select: none;
+  min-height: 20px;
+  padding: 4px 8px;
+  margin: 4px 0;
+  color: var(--color-success);
+  white-space: nowrap;
+}
+
+.error.show, .warning.show, .success.show{
+  opacity: 1;
+  pointer-events: auto;
+  user-select: auto;
 }
 
 /* footer */

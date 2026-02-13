@@ -6,7 +6,7 @@ import type { keywordTypes } from "./keywords";
 export function Keywords({
   type,
   placeholder,
-  initialValues,
+  initialValues = [],
 }: {
   type: keywordTypes;
   placeholder?: string;
@@ -33,8 +33,23 @@ export function Keywords({
   });
 
   useEffect(() => {
-    localStorage.setItem(type, JSON.stringify(keywords));
-  }, [keywords]);
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === type) {
+        try {
+          const storedData = localStorage.getItem(type);
+          const keywords = storedData ? JSON.parse(storedData) : [];
+          setKeywords(keywords);
+        } catch (error) {
+          console.error("Failed to update Keywords:-", error);
+        }
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, [type]);
 
   const addKeyword = (e: React.ChangeEvent) => {
     e.preventDefault();
@@ -63,20 +78,24 @@ export function Keywords({
           placeholder={placeholder ? placeholder : "Enter keyword"}
         />
         <Button type="submit">Add</Button>
-        <p className={`keywordsError ${isDuplicate ? "show" : ""}`}>
+        <p className={`error ${isDuplicate ? "show" : ""}`}>
           Value already exists
         </p>
       </form>
-      <div className="keywords">
+      <section className="keywords">
         {keywords.map((keyword, index) => (
           <span key={index}>
             {keyword}
-            <button type="button" onClick={() => removeKeyword(index)}>
+            <button
+              type="button"
+              style={{ padding: "0 2px" }}
+              onClick={() => removeKeyword(index)}
+            >
               x
             </button>
           </span>
         ))}
-      </div>
+      </section>
     </>
   );
 }
