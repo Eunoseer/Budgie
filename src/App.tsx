@@ -5,6 +5,7 @@ import { Sidebar } from "./components/sidebar.tsx";
 import Dashboard from "./pages/dashboard.tsx";
 import { Settings } from "./pages/settings.tsx";
 import "./App.css";
+import { initialAccountNames, initialPaymentCategories } from "./App.ts";
 
 function getPreferredMode(): "light" | "dark" {
   const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
@@ -20,6 +21,22 @@ function App() {
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    let isInitialised = false;
+    try {
+      const storedInit = localStorage.getItem("initialised");
+      isInitialised = storedInit && JSON.parse(storedInit);
+    } catch (error) {
+      console.error("Initialisation Error:-", error);
+    }
+
+    if (!isInitialised) {
+      localStorage.setItem("accountName", JSON.stringify(initialAccountNames));
+      localStorage.setItem(
+        "paymentCategory",
+        JSON.stringify(initialPaymentCategories),
+      );
+      localStorage.setItem("initialised", JSON.stringify(true));
+    }
     const handler = (e: MediaQueryListEvent) => {
       const savedMode = localStorage.getItem("localMode");
       const systemPrefersDark = e.matches;

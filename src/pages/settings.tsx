@@ -3,6 +3,7 @@ import { z } from "zod";
 import { settingsSchema } from "./settings";
 import type { localModesType } from "./settings";
 import { Keywords } from "../components/keywords.tsx";
+import { initialAccountNames, initialPaymentCategories } from "../App.ts";
 
 export function Settings({
   localMode,
@@ -55,8 +56,21 @@ export function Settings({
       </section>
 
       <section className="card">
-        <h2>Keywords</h2>
-        <Keywords type={"test"} placeholder={"Enter test value"} />
+        <h2>Account Names</h2>
+        <Keywords
+          type={"accountName"}
+          placeholder={"Enter account name"}
+          initialValues={initialAccountNames}
+        />
+      </section>
+
+      <section className="card">
+        <h2>Payment Categories</h2>
+        <Keywords
+          type={"paymentCategory"}
+          placeholder={"Enter payment category"}
+          initialValues={initialPaymentCategories}
+        />
       </section>
     </>
   );

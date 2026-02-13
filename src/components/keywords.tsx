@@ -6,14 +6,30 @@ import type { keywordTypes } from "./keywords";
 export function Keywords({
   type,
   placeholder,
+  initialValues,
 }: {
   type: keywordTypes;
   placeholder?: string;
+  initialValues?: string[];
 }) {
   const [isDuplicate, setIsDuplicate] = useState(false);
   const [keywords, setKeywords] = useState<string[]>(() => {
-    const saved = localStorage.getItem(type);
-    return saved ? JSON.parse(saved) : [];
+    let keywords = [];
+    try {
+      const storedData = localStorage.getItem(type);
+      const isInitialised = JSON.parse(
+        localStorage.getItem("initialised") || "false",
+      );
+
+      if (!isInitialised) {
+        return initialValues;
+      }
+      keywords = storedData ? JSON.parse(storedData) : [];
+    } catch (error) {
+      console.error("Keywords Error:- ", error);
+    }
+
+    return keywords;
   });
 
   useEffect(() => {
