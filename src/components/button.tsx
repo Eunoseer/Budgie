@@ -46,7 +46,12 @@ export const Button: React.FC<ButtonProps> = ({
   }, []);
 
   return (
-    <button ref={buttonRef} onClick={onClick} type={type} className={className}>
+    <button
+      ref={buttonRef}
+      onClick={onClick}
+      type={type}
+      className={`standard ${className}`}
+    >
       {children}
     </button>
   );

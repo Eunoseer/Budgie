@@ -33,8 +33,6 @@ export function ContentManager() {
         const fileContent = e.target?.result as string;
         const data = JSON.parse(fileContent);
 
-        console.log(data);
-
         // Filter out keys not defined in the schema
         const filteredData = Object.keys(data)
           .filter((key) => !ignoredContent.includes(key))
@@ -150,7 +148,6 @@ export function ContentManager() {
         <Button type="button" onClick={() => importConfiguration()}>
           Import Configuration
         </Button>
-        &nbsp;
         <Button type="button" onClick={() => exportConfiguration()}>
           Export Configuration
         </Button>

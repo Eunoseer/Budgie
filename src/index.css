@@ -222,7 +222,7 @@ button {
   background-color: var(--color-button-bg);
   color: var(--color-button-text);
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: background-color 0.25s ease;
 }
 
 button:hover {
@@ -233,6 +233,10 @@ button:focus,
 button:focus-visible {
   background-color: var(--color-button-focus);
   transition: background-color 0.1s ease;
+}
+
+button.standard {
+  margin: 0.3rem 0.1rem;
 }
 
 /* Reset Button Styles */
@@ -269,9 +273,28 @@ input, textarea, select {
   border: 1px solid #666;
   padding: 8px 12px;
   font-size: 1em;
-  margin-bottom: 16px;
+  line-height: 1.5;
+  height: 2.25rem;
   width: 100%;
+  box-sizing: border-box;
 }
+
+input.radio {
+  height: 1.2rem;
+}
+
+input[type="text"], input[type="number"], input[type="search"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
 
 input:focus,
 textarea:focus,

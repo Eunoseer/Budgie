@@ -29,6 +29,7 @@ export function Settings({
               name="mode"
               value="system"
               checked={localMode === "system"}
+              className="radio"
               onChange={() => handleModeChange("system")}
             />
             System
@@ -39,6 +40,7 @@ export function Settings({
               name="mode"
               value="light"
               checked={localMode === "light"}
+              className="radio"
               onChange={() => handleModeChange("light")}
             />
             Light
@@ -49,6 +51,7 @@ export function Settings({
               name="mode"
               value="dark"
               checked={localMode === "dark"}
+              className="radio"
               onChange={() => handleModeChange("dark")}
             />
             Dark
