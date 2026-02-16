@@ -9,7 +9,6 @@ export function ContentManager() {
   const [messageType, setMessageType] = useState("error");
 
   const importConfiguration = () => {
-    // Trigger file selection dialog
     fileInputRef.current?.click();
   };
 
@@ -109,7 +108,8 @@ export function ContentManager() {
       );
       localStorage.setItem("accountName", JSON.stringify(initialAccountNames));
 
-      // Dispatch storage events
+      //Workaround for the storage event not firing on the same window
+      //Yes, it's hacky to not set the old and new value
       const paymentEvent = new StorageEvent("storage", {
         key: "paymentCategory",
         oldValue: "",
@@ -142,6 +142,7 @@ export function ContentManager() {
         style={{ display: "none" }}
       />
       <section>
+        <select></select>
         <p className={`${messageType} ${message.length > 0 ? "show" : ""}`}>
           {message}
         </p>
@@ -153,7 +154,7 @@ export function ContentManager() {
         </Button>
       </section>
       <section className={"resetContainer"}>
-        <Button type="reset" onClick={handleReset} className="resetButton">
+        <Button type="reset" onClick={handleReset} className="criticalButton">
           Reset to Defaults
         </Button>
       </section>

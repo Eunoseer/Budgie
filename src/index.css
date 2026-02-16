@@ -239,19 +239,35 @@ button.standard {
   margin: 0.3rem 0.1rem;
 }
 
-/* Reset Button Styles */
-.resetContainer {
+/* Critical Button Styles */
+.criticalContainer {
   padding-top: 1rem;
 }
 
-.resetButton {
+.criticalButton {
   background-color: var(--color-error);
 }
 
-.resetButton button:focus,
-.resetButton button:focus-visible {
+.criticalButton button:focus,
+.criticalButton button:focus-visible {
   background-color: var(--color-button-bg);
   transition: background-color 0.1s ease;
+}
+
+.deleteButton {
+  background-color: var(--color-button-bg);
+}
+
+button:focus .deleteButton,
+button:focus-visible .deleteButton {
+  background-color: var(--color-error);
+  transition: background-color 0.1s ease;
+}
+
+td .deleteButton {
+  margin: 0px;
+  height: 2rem;
+  line-height: 0rem;
 }
 
 /* Link styles */

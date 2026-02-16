@@ -9,11 +9,11 @@ export const configSchema = z.object({
 
 export const dataSchema = z.array(
   z.object({
-    id: z.number(),
+    id: z.int(),
     description: z.string(),
     accountName: z.string(),
     frequency: z.string(),
-    cost: z.number(),
+    cost: z.coerce.number(),
     paymentCategory: z.string(),
   }),
 );
