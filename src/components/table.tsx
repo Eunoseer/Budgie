@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { dataSchema } from "./contentManager";
 import { Button } from "./button";
-import { Intervals } from "../App";
+import { avgDaysInYear, Intervals } from "../App";
 
 const getPaymentOptions = (): string[] => {
   const storedPaymentOptions = localStorage.getItem("paymentCategory");
@@ -19,7 +19,6 @@ export function Table() {
     const parsedJson = storedData ? JSON.parse(storedData) : [];
     const parsedData = dataSchema.safeParse(parsedJson);
     if (parsedData.error) {
-      console.log("it broke yo");
       return undefined;
     }
     return parsedData.data;
@@ -44,32 +43,52 @@ export function Table() {
     index: number,
   ) => {
     const { name, value } = e.target;
-    let updatedValue = "";
 
-    if (name === "cost") {
-      const numericValue = value.replace(/^\$/, "");
-      // Only allow numbers and an optional decimal value
-      const numericPattern = /^[0-9]*\.?[0-9]*$/;
-      if (numericPattern.test(numericValue)) {
-        updatedValue = numericValue;
-      } else {
-        //In the absence of form validation, handle a user entering a second decimal place gracefully
-        if (numericValue.indexOf(".") !== numericValue.lastIndexOf(".")) {
-          updatedValue = numericValue.slice(0, numericValue.lastIndexOf("."));
-        }
-      }
-    } else {
-      updatedValue = value;
+    if (!data) {
+      //If you got here, well done!
+      return;
     }
+    const updatedData = data.map((item) =>
+      item.id === index ? { ...item, [name]: value } : item,
+    );
+    setData(updatedData);
+  };
+
+  const handleCostChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number,
+  ) => {
+    const { value } = e.target;
+    let cost = "";
 
     if (!data) {
       //If you got here, well done!
       return;
     }
 
+    const numericValue = value.replace(/^\$/, "");
+    // Only allow numbers and an optional decimal value
+    const numericPattern = /^[0-9]*\.?[0-9]*$/;
+    if (numericPattern.test(numericValue)) {
+      cost = numericValue;
+    } else {
+      //In the absence of form validation, handle a user entering a second decimal place gracefully
+      if (numericValue.indexOf(".") !== numericValue.lastIndexOf(".")) {
+        cost = numericValue.slice(0, numericValue.lastIndexOf("."));
+      }
+    }
+
+    // TODO calculate based of preferred billing interval value
+    const perCycle = parseFloat(cost) / (avgDaysInYear / 14) || 0;
+
+    // TODO calculate based off chosen billing frequency
+    const annual = parseFloat(cost) * (avgDaysInYear / 14) || 0;
+
     const updatedData = data.map((item) =>
-      item.id === index ? { ...item, [name]: updatedValue } : item,
+      item.id === index ? { ...item, cost: cost, perCycle, annual } : item,
     );
+
+    //TODO come up with a way that I can add decimal places to the form without the type error of cost being a string
     setData(updatedData);
   };
 
@@ -80,7 +99,9 @@ export function Table() {
       accountName: "",
       frequency: Intervals.annually.name,
       cost: 0,
+      perCycle: 0,
       paymentCategory: "",
+      annual: 0,
     };
     if (!data) {
       setData([newRow]);
@@ -102,22 +123,17 @@ export function Table() {
   }, [data]);
 
   return (
-    <table
-      style={{
-        width: "100%",
-        tableLayout: "fixed",
-        borderCollapse: "collapse",
-        borderSpacing: "0px",
-        overflowX: "auto",
-      }}
-    >
+    <table>
       <thead>
         <tr>
-          <th style={{ width: "25%" }}>Description</th>
-          <th style={{ width: "20%" }}>Account Name</th>
-          <th style={{ width: "20%" }}>Frequency</th>
-          <th style={{ width: "10%" }}>Cost</th>
-          <th style={{ width: "20%" }}>Payment Category</th>
+          <th style={{ width: "20%" }}>Description</th>
+          <th style={{ width: "13%" }}>Account Name</th>
+          <th style={{ width: "13%" }}>Frequency</th>
+          <th style={{ width: "12%" }}>Cost</th>
+          {/* //TODO change 'cycle' to match the billing interval singular eg per fortnight, per quarter*/}
+          <th style={{ width: "12%" }}>Per Cycle</th>
+          <th style={{ width: "13%" }}>Payment Category</th>
+          <th style={{ width: "12%" }}>Annual Cost</th>
           <th style={{ width: "5%" }}></th>
         </tr>
       </thead>
@@ -125,18 +141,20 @@ export function Table() {
         {data &&
           data.map((item, index) => (
             <tr key={item.id}>
-              <td style={{ padding: "0px" }}>
+              <td>
                 <input
                   name="description"
                   value={item.description}
                   onChange={(e) => handleTextChange(e, item.id)}
+                  className={index % 2 == 0 ? "table" : "tableAlt"}
                 />
               </td>
-              <td style={{ padding: "0px" }}>
+              <td>
                 <select
                   name="accountName"
                   value={item.accountName}
                   onChange={(e) => handleDropdownChange(e, item.id)}
+                  className={index % 2 == 0 ? "table" : "tableAlt"}
                 >
                   {getAccountNames().map((option) => (
                     <option key={option} value={option}>
@@ -145,11 +163,12 @@ export function Table() {
                   ))}
                 </select>
               </td>
-              <td style={{ padding: "0px" }}>
+              <td>
                 <select
                   name="frequency"
                   value={item.frequency}
                   onChange={(e) => handleDropdownChange(e, item.id)}
+                  className={index % 2 == 0 ? "table" : "tableAlt"}
                 >
                   {Object.values(Intervals).map((interval) => (
                     <option key={interval.name} value={interval.name}>
@@ -158,18 +177,29 @@ export function Table() {
                   ))}
                 </select>
               </td>
-              <td style={{ padding: "0px" }}>
+              <td>
                 <input
                   name="cost"
                   value={item.cost ? `$${item.cost}` : ""}
-                  onChange={(e) => handleTextChange(e, item.id)}
+                  onChange={(e) => handleCostChange(e, item.id)}
+                  className={index % 2 == 0 ? "table" : "tableAlt"}
                 />
               </td>
-              <td style={{ padding: "0px" }}>
+              <td>
+                <input
+                  name="perCycle"
+                  value={`$${item.perCycle.toFixed(2)}`}
+                  disabled={true}
+                  onChange={(e) => handleTextChange(e, item.id)}
+                  className={index % 2 == 0 ? "table" : "tableAlt"}
+                />
+              </td>
+              <td>
                 <select
                   name="paymentCategory"
                   value={item.paymentCategory}
                   onChange={(e) => handleDropdownChange(e, item.id)}
+                  className={index % 2 == 0 ? "table" : "tableAlt"}
                 >
                   {getPaymentOptions().map((option) => (
                     <option key={option} value={option}>
@@ -177,6 +207,15 @@ export function Table() {
                     </option>
                   ))}
                 </select>
+              </td>
+              <td>
+                <input
+                  name="annual"
+                  value={`$${item.annual.toFixed(2)}`}
+                  disabled={true}
+                  onChange={(e) => handleTextChange(e, item.id)}
+                  className={index % 2 == 0 ? "table" : "tableAlt"}
+                />
               </td>
               <td>
                 <Button
@@ -192,10 +231,25 @@ export function Table() {
       </tbody>
       <tfoot>
         <tr>
-          <td colSpan={6}>
+          <td>
             <Button type="button" onClick={handleAddRow}>
               Add Row
             </Button>
+          </td>
+          <td colSpan={2}></td>
+          <td></td>
+          <td>
+            $
+            {data
+              ? data.reduce((sum, item) => sum + item.perCycle, 0).toFixed(2)
+              : 0}
+          </td>
+          <td></td>
+          <td>
+            $
+            {data
+              ? data.reduce((sum, item) => sum + item.annual, 0).toFixed(2)
+              : 0}
           </td>
         </tr>
       </tfoot>

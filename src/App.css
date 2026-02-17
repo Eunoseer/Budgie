@@ -1,6 +1,20 @@
 #root {
-  max-width: 1280px;
+  max-width: 1366px;
   margin: 0 auto;
   text-align: center;
   width:100%
+}
+
+.footer {
+  position: fixed;
+  max-width: 1366;
+  margin: auto;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  z-index: 10;
+  text-align: center;
 }

@@ -7,14 +7,26 @@ export const initialPaymentCategories = [
 
 export const initialAccountNames = ["Default"];
 
-const avgDaysInYear = 365.25; //((365 * 3) + 366) / 4;
+export const avgDaysInYear = 365.25; //((365 * 3) + 366) / 4;
 
 export const Intervals = {
-  weekly: { name: "Weekly", days: 7 },
-  fortnighty: { name: "Fortnightly", days: 7 },
-  monthly: { name: "Monthly", days: avgDaysInYear / 12 },
-  bimonthly: { name: "Bi-Monthly", days: avgDaysInYear / 6 },
-  quarterly: { name: "Quarterly", days: avgDaysInYear / 4 },
-  biannually: { name: "Bi-Annually", days: avgDaysInYear / 2 },
-  annually: { name: "Annually", days: avgDaysInYear },
+  weekly: { name: "Weekly", singular: "Week", days: 7 },
+  fortnighty: { name: "Fortnightly", singular: "Fortnight", days: 7 },
+  monthly: { name: "Monthly", singular: "Month", days: avgDaysInYear / 12 },
+  bimonthly: {
+    name: "Bi-Monthly",
+    singular: "2 Months",
+    days: avgDaysInYear / 6,
+  },
+  quarterly: {
+    name: "Quarterly",
+    singular: "Quarter",
+    days: avgDaysInYear / 4,
+  },
+  biannually: {
+    name: "Bi-Annually",
+    singular: "6 Months",
+    days: avgDaysInYear / 2,
+  },
+  annually: { name: "Annually", singular: "Year", days: avgDaysInYear },
 } as const;

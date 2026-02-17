@@ -14,7 +14,9 @@ export const dataSchema = z.array(
     accountName: z.string(),
     frequency: z.string(),
     cost: z.coerce.number(),
+    perCycle: z.coerce.number(),
     paymentCategory: z.string(),
+    annual: z.coerce.number(),
   }),
 );
 
