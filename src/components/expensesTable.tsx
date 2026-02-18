@@ -1,59 +1,14 @@
 import { useState, useEffect } from "react";
-import { dataSchema, type dataSchemaType } from "./contentManager";
+import { dataSchema } from "./contentManager";
 import { Button } from "./button";
+import { avgDaysInYear, Intervals } from "../App";
 import {
-  avgDaysInYear,
-  getIntervalByName,
-  Intervals,
-  type IntervalType,
-} from "../App";
-
-const getPaymentOptions = (): string[] => {
-  const storedPaymentOptions = localStorage.getItem("paymentCategory");
-  return storedPaymentOptions ? JSON.parse(storedPaymentOptions) : [];
-};
-
-const getAccountNames = (): string[] => {
-  const storedAccountNames = localStorage.getItem("accountName");
-  return storedAccountNames ? JSON.parse(storedAccountNames) : [];
-};
-
-const getTransferFrequency = () => {
-  const transferFrequency = localStorage.getItem("transferFrequency");
-  let interval: IntervalType = Intervals.fortnighty;
-  if (transferFrequency) {
-    const retrievedinterval = getIntervalByName(transferFrequency);
-    interval = retrievedinterval || interval;
-  }
-
-  return interval;
-};
-
-const getFrequencyIntervalByTableRowId = (data: dataSchemaType, id: number) => {
-  const dataRow = data.find((item) => item.id === id);
-  if (dataRow) {
-    return getIntervalByName(dataRow.frequency);
-  }
-  return undefined;
-};
-
-const recalculateCostsByIdByIntervalName = (
-  data: dataSchemaType,
-  intervalName: string,
-  id: number,
-) => {
-  const interval = getIntervalByName(intervalName);
-  const transferFrequency = getTransferFrequency();
-  if (!interval) return data;
-  return data.map((item) => {
-    if (item.id === id) {
-      const annual = item.cost * (avgDaysInYear / interval.days);
-      const perCycle = annual / (avgDaysInYear / transferFrequency.days);
-      return { ...item, annual, perCycle };
-    }
-    return item;
-  });
-};
+  getTransferFrequency,
+  getFrequencyIntervalByTableRowId,
+  getAccountNames,
+  getPaymentOptions,
+  recalculateCostsByIdByIntervalName,
+} from "./expensesTable";
 
 export function ExpensesTable() {
   const [data, setData] = useState(() => {
