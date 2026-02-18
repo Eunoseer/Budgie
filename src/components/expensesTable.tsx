@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { dataSchema } from "./contentManager";
+import { dataSchema, type dataSchemaType } from "./contentManager";
 import { Button } from "./button";
 import {
   avgDaysInYear,
@@ -29,6 +29,32 @@ const getTransferFrequency = () => {
   return interval;
 };
 
+const getFrequencyIntervalByTableRowId = (data: dataSchemaType, id: number) => {
+  const dataRow = data.find((item) => item.id === id);
+  if (dataRow) {
+    return getIntervalByName(dataRow.frequency);
+  }
+  return undefined;
+};
+
+const recalculateCostsByIdByIntervalName = (
+  data: dataSchemaType,
+  intervalName: string,
+  id: number,
+) => {
+  const interval = getIntervalByName(intervalName);
+  const transferFrequency = getTransferFrequency();
+  if (!interval) return data;
+  return data.map((item) => {
+    if (item.id === id) {
+      const annual = item.cost * (avgDaysInYear / interval.days);
+      const perCycle = annual / (avgDaysInYear / transferFrequency.days);
+      return { ...item, annual, perCycle };
+    }
+    return item;
+  });
+};
+
 export function ExpensesTable() {
   const [data, setData] = useState(() => {
     const storedData = localStorage.getItem("tableData");
@@ -46,11 +72,19 @@ export function ExpensesTable() {
     e: React.ChangeEvent<HTMLSelectElement>,
     index: number,
   ) => {
-    const selectedValue = e.target.value;
+    const { name, value } = e.target;
     if (data) {
-      const updatedData = data.map((item) =>
-        item.id === index ? { ...item, [e.target.name]: selectedValue } : item,
+      const id = data[index].id;
+      let updatedData = data.map((item) =>
+        item.id === id ? { ...item, [name]: value } : item,
       );
+      if (name === "frequency") {
+        updatedData = recalculateCostsByIdByIntervalName(
+          updatedData,
+          value,
+          id,
+        );
+      }
       setData(updatedData);
     }
   };
@@ -65,8 +99,10 @@ export function ExpensesTable() {
       //If you got here, well done!
       return;
     }
+
+    const id = data[index].id;
     const updatedData = data.map((item) =>
-      item.id === index ? { ...item, [name]: value } : item,
+      item.id === id ? { ...item, [name]: value } : item,
     );
     setData(updatedData);
   };
@@ -83,6 +119,8 @@ export function ExpensesTable() {
       return;
     }
 
+    const id = data[index].id;
+
     const numericValue = value.replace(/^\$/, "");
     // Only allow numbers and an optional decimal value
     const numericPattern = /^[0-9]*\.?[0-9]*$/;
@@ -94,14 +132,16 @@ export function ExpensesTable() {
         cost = numericValue.slice(0, numericValue.lastIndexOf("."));
       }
     }
+    const frequencyInterval = getFrequencyIntervalByTableRowId(data, id);
+    let annual = 0;
+    if (frequencyInterval) {
+      annual = parseFloat(cost) * (avgDaysInYear / frequencyInterval.days) || 0;
+    }
 
-    const perCycle =
-      parseFloat(cost) / (avgDaysInYear / transferFrequency.days) || 0;
-
-    const annual = parseFloat(cost) * (avgDaysInYear / 14) || 0;
+    const perCycle = annual / (avgDaysInYear / transferFrequency.days) || 0;
 
     const updatedData = data.map((item) =>
-      item.id === index ? { ...item, cost, perCycle, annual } : item,
+      item.id === id ? { ...item, cost, perCycle, annual } : item,
     );
 
     //TODO come up with a way that I can add decimal places to the form without the type error of cost being a string
@@ -160,7 +200,7 @@ export function ExpensesTable() {
                 <input
                   name="description"
                   value={item.description}
-                  onChange={(e) => handleTextChange(e, item.id)}
+                  onChange={(e) => handleTextChange(e, index)}
                   className={index % 2 == 0 ? "table" : "tableAlt"}
                 />
               </td>
@@ -168,7 +208,7 @@ export function ExpensesTable() {
                 <select
                   name="accountName"
                   value={item.accountName}
-                  onChange={(e) => handleDropdownChange(e, item.id)}
+                  onChange={(e) => handleDropdownChange(e, index)}
                   className={index % 2 == 0 ? "table" : "tableAlt"}
                 >
                   {getAccountNames().map((option) => (
@@ -182,7 +222,7 @@ export function ExpensesTable() {
                 <select
                   name="frequency"
                   value={item.frequency}
-                  onChange={(e) => handleDropdownChange(e, item.id)}
+                  onChange={(e) => handleDropdownChange(e, index)}
                   className={index % 2 == 0 ? "table" : "tableAlt"}
                 >
                   {Object.values(Intervals).map((interval) => (
@@ -196,7 +236,7 @@ export function ExpensesTable() {
                 <input
                   name="cost"
                   value={item.cost ? `$${item.cost}` : ""}
-                  onChange={(e) => handleCostChange(e, item.id)}
+                  onChange={(e) => handleCostChange(e, index)}
                   className={index % 2 == 0 ? "table" : "tableAlt"}
                 />
               </td>
@@ -205,7 +245,7 @@ export function ExpensesTable() {
                   name="perCycle"
                   value={`$${item.perCycle.toFixed(2)}`}
                   disabled={true}
-                  onChange={(e) => handleTextChange(e, item.id)}
+                  onChange={(e) => handleTextChange(e, index)}
                   className={index % 2 == 0 ? "table" : "tableAlt"}
                 />
               </td>
@@ -213,7 +253,7 @@ export function ExpensesTable() {
                 <select
                   name="paymentCategory"
                   value={item.paymentCategory}
-                  onChange={(e) => handleDropdownChange(e, item.id)}
+                  onChange={(e) => handleDropdownChange(e, index)}
                   className={index % 2 == 0 ? "table" : "tableAlt"}
                 >
                   {getPaymentOptions().map((option) => (
@@ -228,7 +268,7 @@ export function ExpensesTable() {
                   name="annual"
                   value={`$${item.annual.toFixed(2)}`}
                   disabled={true}
-                  onChange={(e) => handleTextChange(e, item.id)}
+                  onChange={(e) => handleTextChange(e, index)}
                   className={index % 2 == 0 ? "table" : "tableAlt"}
                 />
               </td>

@@ -21,3 +21,4 @@ export const dataSchema = z.array(
 );
 
 export type configSchemaType = z.infer<typeof configSchema>;
+export type dataSchemaType = z.infer<typeof dataSchema>;
