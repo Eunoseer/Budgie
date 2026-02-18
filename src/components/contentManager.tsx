@@ -1,12 +1,20 @@
 import { useRef, useState } from "react";
 import { Button } from "./button";
 import { configSchema, ignoredContent } from "./contentManager";
-import { initialPaymentCategories, initialAccountNames } from "../App";
+import {
+  initialPaymentCategories,
+  initialAccountNames,
+  Intervals,
+  recalculatePerCycleCostsByIntervalName,
+} from "../App";
 
 export function ContentManager() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("error");
+  const [transferFrequency, setTransferFrequency] = useState(
+    localStorage.getItem("transferFrequency"),
+  );
 
   const importConfiguration = () => {
     fileInputRef.current?.click();
@@ -19,6 +27,12 @@ export function ContentManager() {
     setMessage(message);
     setMessageType(messageType);
     setTimeout(() => setMessage(""), 2000); // Hide after 2 seconds
+  };
+
+  const handleTransferChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setTransferFrequency(e.target.value);
+    localStorage.setItem("transferFrequency", e.target.value);
+    recalculatePerCycleCostsByIntervalName(e.target.value);
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -142,7 +156,6 @@ export function ContentManager() {
         style={{ display: "none" }}
       />
       <section>
-        <select></select>
         <p className={`${messageType} ${message.length > 0 ? "show" : ""}`}>
           {message}
         </p>
@@ -157,6 +170,22 @@ export function ContentManager() {
         <Button type="reset" onClick={handleReset} className="criticalButton">
           Reset to Defaults
         </Button>
+      </section>
+      <section>
+        <p>Preferred Transfer Frequency</p>
+        <select
+          className="standard"
+          value={transferFrequency || "Monthly"}
+          onChange={(e) => {
+            handleTransferChange(e);
+          }}
+        >
+          {Object.values(Intervals).map((interval) => (
+            <option key={interval.name} value={interval.name}>
+              {interval.name}
+            </option>
+          ))}
+        </select>
       </section>
     </>
   );

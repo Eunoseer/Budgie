@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 import { dataSchema } from "./contentManager";
 import { Button } from "./button";
-import { avgDaysInYear, Intervals } from "../App";
+import {
+  avgDaysInYear,
+  getIntervalByName,
+  Intervals,
+  type IntervalType,
+} from "../App";
 
 const getPaymentOptions = (): string[] => {
   const storedPaymentOptions = localStorage.getItem("paymentCategory");
@@ -13,7 +18,18 @@ const getAccountNames = (): string[] => {
   return storedAccountNames ? JSON.parse(storedAccountNames) : [];
 };
 
-export function Table() {
+const getTransferFrequency = () => {
+  const transferFrequency = localStorage.getItem("transferFrequency");
+  let interval: IntervalType = Intervals.fortnighty;
+  if (transferFrequency) {
+    const retrievedinterval = getIntervalByName(transferFrequency);
+    interval = retrievedinterval || interval;
+  }
+
+  return interval;
+};
+
+export function ExpensesTable() {
   const [data, setData] = useState(() => {
     const storedData = localStorage.getItem("tableData");
     const parsedJson = storedData ? JSON.parse(storedData) : [];
@@ -23,6 +39,7 @@ export function Table() {
     }
     return parsedData.data;
   });
+  const [transferFrequency] = useState(() => getTransferFrequency());
 
   // Update selected value and save to localStorage
   const handleDropdownChange = (
@@ -78,14 +95,13 @@ export function Table() {
       }
     }
 
-    // TODO calculate based of preferred billing interval value
-    const perCycle = parseFloat(cost) / (avgDaysInYear / 14) || 0;
+    const perCycle =
+      parseFloat(cost) / (avgDaysInYear / transferFrequency.days) || 0;
 
-    // TODO calculate based off chosen billing frequency
     const annual = parseFloat(cost) * (avgDaysInYear / 14) || 0;
 
     const updatedData = data.map((item) =>
-      item.id === index ? { ...item, cost: cost, perCycle, annual } : item,
+      item.id === index ? { ...item, cost, perCycle, annual } : item,
     );
 
     //TODO come up with a way that I can add decimal places to the form without the type error of cost being a string
@@ -130,8 +146,7 @@ export function Table() {
           <th style={{ width: "13%" }}>Account Name</th>
           <th style={{ width: "13%" }}>Frequency</th>
           <th style={{ width: "12%" }}>Cost</th>
-          {/* //TODO change 'cycle' to match the billing interval singular eg per fortnight, per quarter*/}
-          <th style={{ width: "12%" }}>Per Cycle</th>
+          <th style={{ width: "12%" }}>Per {transferFrequency.singular}</th>
           <th style={{ width: "13%" }}>Payment Category</th>
           <th style={{ width: "12%" }}>Annual Cost</th>
           <th style={{ width: "5%" }}></th>

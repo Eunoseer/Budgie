@@ -245,6 +245,11 @@ button.standard {
   margin: 0.3rem 0.1rem;
 }
 
+select.standard {
+  width: 15rem;
+  text-align: center;
+}
+
 /* Critical Button Styles */
 .criticalContainer {
   padding-top: 1rem;
