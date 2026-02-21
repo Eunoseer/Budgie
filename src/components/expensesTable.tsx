@@ -1,14 +1,18 @@
 import { useState, useEffect } from "react";
-import { dataSchema } from "./contentManager";
 import { Button } from "./button";
-import { avgDaysInYear, Intervals } from "../App";
+import {
+  avgDaysInYear,
+  calculateIncomePerTransferCycle,
+  dataSchema,
+  Intervals,
+} from "../App";
 import {
   getTransferFrequency,
   getFrequencyIntervalByTableRowId,
   getAccountNames,
   getPaymentOptions,
   recalculateCostsByIdByIntervalName,
-} from "./expensesTable";
+} from "./expensesTable.ts";
 
 export function ExpensesTable() {
   const [data, setData] = useState(() => {
@@ -21,8 +25,11 @@ export function ExpensesTable() {
     return parsedData.data;
   });
   const [transferFrequency] = useState(() => getTransferFrequency());
+  const [totalAnnualCost, setTotalAnnualCost] = useState(0);
+  const [totalPerCycleCost, setTotalPerCycleCost] = useState(0);
 
-  // Update selected value and save to localStorage
+  const incomeValue = calculateIncomePerTransferCycle() || 0;
+
   const handleDropdownChange = (
     e: React.ChangeEvent<HTMLSelectElement>,
     index: number,
@@ -131,6 +138,11 @@ export function ExpensesTable() {
 
   useEffect(() => {
     localStorage.setItem("tableData", JSON.stringify(data));
+    if (data) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setTotalPerCycleCost(data.reduce((sum, item) => sum + item.perCycle, 0));
+      setTotalAnnualCost(data.reduce((sum, item) => sum + item.annual, 0));
+    }
   }, [data]);
 
   return (
@@ -141,9 +153,9 @@ export function ExpensesTable() {
           <th style={{ width: "13%" }}>Account Name</th>
           <th style={{ width: "13%" }}>Frequency</th>
           <th style={{ width: "12%" }}>Cost</th>
-          <th style={{ width: "12%" }}>Per {transferFrequency.singular}</th>
           <th style={{ width: "13%" }}>Payment Category</th>
           <th style={{ width: "12%" }}>Annual Cost</th>
+          <th style={{ width: "12%" }}>Per {transferFrequency.singular}</th>
           <th style={{ width: "5%" }}></th>
         </tr>
       </thead>
@@ -196,15 +208,6 @@ export function ExpensesTable() {
                 />
               </td>
               <td>
-                <input
-                  name="perCycle"
-                  value={`$${item.perCycle.toFixed(2)}`}
-                  disabled={true}
-                  onChange={(e) => handleTextChange(e, index)}
-                  className={index % 2 == 0 ? "table" : "tableAlt"}
-                />
-              </td>
-              <td>
                 <select
                   name="paymentCategory"
                   value={item.paymentCategory}
@@ -228,6 +231,15 @@ export function ExpensesTable() {
                 />
               </td>
               <td>
+                <input
+                  name="perCycle"
+                  value={`$${item.perCycle.toFixed(2)}`}
+                  disabled={true}
+                  onChange={(e) => handleTextChange(e, index)}
+                  className={index % 2 == 0 ? "table" : "tableAlt"}
+                />
+              </td>
+              <td>
                 <Button
                   type="reset"
                   className={"deleteButton"}
@@ -240,6 +252,15 @@ export function ExpensesTable() {
           ))}
       </tbody>
       <tfoot>
+        <tr style={{ lineHeight: "2rem" }}>
+          <td>Unallocated</td>
+          <td></td>
+          <td>{localStorage.getItem("transferFrequency")}</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>${(incomeValue - totalPerCycleCost).toFixed(2)}</td>
+        </tr>
         <tr>
           <td>
             <Button type="button" onClick={handleAddRow}>
@@ -248,19 +269,9 @@ export function ExpensesTable() {
           </td>
           <td colSpan={2}></td>
           <td></td>
-          <td>
-            $
-            {data
-              ? data.reduce((sum, item) => sum + item.perCycle, 0).toFixed(2)
-              : 0}
-          </td>
           <td></td>
-          <td>
-            $
-            {data
-              ? data.reduce((sum, item) => sum + item.annual, 0).toFixed(2)
-              : 0}
-          </td>
+          <td>${totalAnnualCost.toFixed(2)}</td>
+          <td>${totalPerCycleCost.toFixed(2)}</td>
         </tr>
       </tfoot>
     </table>

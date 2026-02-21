@@ -1,5 +1,4 @@
 import z from "zod";
-import { dataSchema } from "./components/contentManager";
 
 export const initialPaymentCategories = [
   "Bills",
@@ -18,7 +17,31 @@ const intervalSchema = z.object({
   days: z.number(),
 });
 
+export const dataSchema = z.array(
+  z.object({
+    id: z.int(),
+    description: z.string(),
+    accountName: z.string(),
+    frequency: z.string(),
+    cost: z.coerce.number(),
+    perCycle: z.coerce.number(),
+    paymentCategory: z.string(),
+    annual: z.coerce.number(),
+  }),
+);
+
+export const incomeSchema = z.array(
+  z.object({
+    id: z.int(),
+    description: z.string(),
+    frequency: z.string(),
+    income: z.coerce.number(),
+  }),
+);
+
 export type IntervalType = z.Infer<typeof intervalSchema>;
+export type DataSchemaType = z.infer<typeof dataSchema>;
+export type IncomeSchemaType = z.infer<typeof incomeSchema>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const intervalsSchema = z.record(z.string(), intervalSchema);
@@ -47,6 +70,8 @@ export const Intervals: IntervalsSchemaType = {
   annually: { name: "Annually", singular: "Year", days: avgDaysInYear },
 };
 
+export const defaultTransferFrequency = Intervals.monthly.name;
+
 export const getIntervalByName = (name: string) => {
   return (
     Object.values(Intervals).find((interval) => interval.name === name) ||
@@ -71,4 +96,33 @@ export const recalculatePerCycleCostsByIntervalName = (
       console.error(parsedData.error);
     }
   }
+};
+
+export const calculateIncomePerTransferCycle = () => {
+  const transferCycleName =
+    localStorage.getItem("transferFrequency") || defaultTransferFrequency;
+  const transferCycleInterval = getIntervalByName(transferCycleName);
+
+  if (!transferCycleInterval) {
+    return;
+  }
+
+  const incomeData = JSON.parse(localStorage.getItem("incomeData") || "");
+  let baseIncome = 0;
+
+  const parsedIncomeData = incomeSchema.parse(incomeData);
+
+  //Break down the income into a "per day" base income figure
+  parsedIncomeData.forEach((dataItem) => {
+    const incomeCycleInterval = getIntervalByName(dataItem.frequency);
+    if (!incomeCycleInterval) {
+      return;
+    }
+    baseIncome += dataItem.income / incomeCycleInterval.days;
+  });
+
+  //Now that we have our base figure, multiply it out by the transfer cycle interval
+  const intervalIncome = baseIncome * transferCycleInterval.days;
+
+  return intervalIncome;
 };

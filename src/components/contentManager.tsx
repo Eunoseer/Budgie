@@ -6,6 +6,7 @@ import {
   initialAccountNames,
   Intervals,
   recalculatePerCycleCostsByIntervalName,
+  defaultTransferFrequency,
 } from "../App";
 
 export function ContentManager() {
@@ -175,7 +176,7 @@ export function ContentManager() {
         <p>Preferred Transfer Frequency</p>
         <select
           className="standard"
-          value={transferFrequency || "Monthly"}
+          value={transferFrequency || defaultTransferFrequency}
           onChange={(e) => {
             handleTransferChange(e);
           }}

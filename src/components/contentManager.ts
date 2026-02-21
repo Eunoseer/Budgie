@@ -7,18 +7,4 @@ export const configSchema = z.object({
   paymentCategory: z.array(z.string()),
 });
 
-export const dataSchema = z.array(
-  z.object({
-    id: z.int(),
-    description: z.string(),
-    accountName: z.string(),
-    frequency: z.string(),
-    cost: z.coerce.number(),
-    perCycle: z.coerce.number(),
-    paymentCategory: z.string(),
-    annual: z.coerce.number(),
-  }),
-);
-
 export type configSchemaType = z.infer<typeof configSchema>;
-export type dataSchemaType = z.infer<typeof dataSchema>;

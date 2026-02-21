@@ -1,4 +1,5 @@
-import { ExpensesTable } from "../components/expensesTable";
+import { ExpensesTable } from "../components/expensesTable.tsx";
+import { IncomeTable } from "../components/incomeTable.tsx";
 
 function Dashboard() {
   return (
@@ -30,7 +31,10 @@ function Dashboard() {
           settings page.
         </p>
       </section>
-      <section className="card v75">
+      <section className="card v50">
+        <section style={{ width: "75%" }}>
+          <IncomeTable />
+        </section>
         <ExpensesTable />
       </section>
     </>

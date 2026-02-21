@@ -2,9 +2,9 @@ import {
   type IntervalType,
   Intervals,
   avgDaysInYear,
+  type DataSchemaType,
   getIntervalByName,
 } from "../App";
-import type { dataSchemaType } from "./contentManager";
 
 export const getPaymentOptions = (): string[] => {
   const storedPaymentOptions = localStorage.getItem("paymentCategory");
@@ -28,7 +28,7 @@ export const getTransferFrequency = () => {
 };
 
 export const getFrequencyIntervalByTableRowId = (
-  data: dataSchemaType,
+  data: DataSchemaType,
   id: number,
 ) => {
   const dataRow = data.find((item) => item.id === id);
@@ -39,7 +39,7 @@ export const getFrequencyIntervalByTableRowId = (
 };
 
 export const recalculateCostsByIdByIntervalName = (
-  data: dataSchemaType,
+  data: DataSchemaType,
   intervalName: string,
   id: number,
 ) => {
