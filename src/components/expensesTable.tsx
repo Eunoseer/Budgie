@@ -5,6 +5,7 @@ import {
   calculateIncomePerTransferCycle,
   dataSchema,
   Intervals,
+  localStorageKeys,
 } from "../App";
 import {
   getTransferFrequency,
@@ -16,7 +17,7 @@ import {
 
 export function ExpensesTable() {
   const [data, setData] = useState(() => {
-    const storedData = localStorage.getItem("tableData");
+    const storedData = localStorage.getItem(localStorageKeys.tableData);
     const parsedJson = storedData ? JSON.parse(storedData) : [];
     const parsedData = dataSchema.safeParse(parsedJson);
     if (parsedData.error) {
@@ -137,7 +138,7 @@ export function ExpensesTable() {
   };
 
   useEffect(() => {
-    localStorage.setItem("tableData", JSON.stringify(data));
+    localStorage.setItem(localStorageKeys.tableData, JSON.stringify(data));
     if (data) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setTotalPerCycleCost(data.reduce((sum, item) => sum + item.perCycle, 0));
@@ -169,6 +170,7 @@ export function ExpensesTable() {
                   value={item.description}
                   onChange={(e) => handleTextChange(e, index)}
                   className={index % 2 == 0 ? "table" : "tableAlt"}
+                  aria-label="description"
                 />
               </td>
               <td>
@@ -177,6 +179,7 @@ export function ExpensesTable() {
                   value={item.accountName}
                   onChange={(e) => handleDropdownChange(e, index)}
                   className={index % 2 == 0 ? "table" : "tableAlt"}
+                  aria-label="account name"
                 >
                   {getAccountNames().map((option) => (
                     <option key={option} value={option}>
@@ -191,6 +194,7 @@ export function ExpensesTable() {
                   value={item.frequency}
                   onChange={(e) => handleDropdownChange(e, index)}
                   className={index % 2 == 0 ? "table" : "tableAlt"}
+                  aria-label="frequency"
                 >
                   {Object.values(Intervals).map((interval) => (
                     <option key={interval.name} value={interval.name}>
@@ -205,6 +209,7 @@ export function ExpensesTable() {
                   value={item.cost ? `$${item.cost}` : ""}
                   onChange={(e) => handleCostChange(e, index)}
                   className={index % 2 == 0 ? "table" : "tableAlt"}
+                  aria-label="cost"
                 />
               </td>
               <td>
@@ -213,6 +218,7 @@ export function ExpensesTable() {
                   value={item.paymentCategory}
                   onChange={(e) => handleDropdownChange(e, index)}
                   className={index % 2 == 0 ? "table" : "tableAlt"}
+                  aria-label="payment category"
                 >
                   {getPaymentOptions().map((option) => (
                     <option key={option} value={option}>
@@ -228,6 +234,7 @@ export function ExpensesTable() {
                   disabled={true}
                   onChange={(e) => handleTextChange(e, index)}
                   className={index % 2 == 0 ? "table" : "tableAlt"}
+                  aria-label="annual cost"
                 />
               </td>
               <td>
@@ -237,6 +244,7 @@ export function ExpensesTable() {
                   disabled={true}
                   onChange={(e) => handleTextChange(e, index)}
                   className={index % 2 == 0 ? "table" : "tableAlt"}
+                  aria-label="per cycle cost"
                 />
               </td>
               <td>
@@ -244,6 +252,7 @@ export function ExpensesTable() {
                   type="reset"
                   className={"deleteButton"}
                   onClick={() => handleRemoveRow(index)}
+                  aria-label="delete row"
                 >
                   -
                 </Button>
@@ -255,7 +264,7 @@ export function ExpensesTable() {
         <tr style={{ lineHeight: "2rem" }}>
           <td>Unallocated</td>
           <td></td>
-          <td>{localStorage.getItem("transferFrequency")}</td>
+          <td>{localStorage.getItem(localStorageKeys.transferFrequency)}</td>
           <td></td>
           <td></td>
           <td></td>
@@ -263,7 +272,7 @@ export function ExpensesTable() {
         </tr>
         <tr>
           <td>
-            <Button type="button" onClick={handleAddRow}>
+            <Button type="button" onClick={handleAddRow} aria-label="add row">
               Add Row
             </Button>
           </td>

@@ -5,7 +5,12 @@ import { Sidebar } from "./components/sidebar.tsx";
 import Dashboard from "./pages/dashboard.tsx";
 import { Settings } from "./pages/settings.tsx";
 import "./App.css";
-import { initialAccountNames, initialPaymentCategories } from "./App.ts";
+import {
+  defaultTransferFrequency,
+  initialAccountNames,
+  initialPaymentCategories,
+  localStorageKeys,
+} from "./App.ts";
 
 function getPreferredMode(): "light" | "dark" {
   const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
@@ -15,7 +20,7 @@ function getPreferredMode(): "light" | "dark" {
 function App() {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [localMode, setLocalMode] = useState(() => {
-    const savedMode = localStorage.getItem("localMode");
+    const savedMode = localStorage.getItem(localStorageKeys.localMode);
     return savedMode || getPreferredMode();
   });
 
@@ -23,22 +28,29 @@ function App() {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     let isInitialised = false;
     try {
-      const storedInit = localStorage.getItem("initialised");
+      const storedInit = localStorage.getItem(localStorageKeys.initialised);
       isInitialised = storedInit && JSON.parse(storedInit);
     } catch (error) {
       console.error("Initialisation Error:-", error);
     }
 
     if (!isInitialised) {
-      localStorage.setItem("accountName", JSON.stringify(initialAccountNames));
       localStorage.setItem(
-        "paymentCategory",
+        localStorageKeys.accountName,
+        JSON.stringify(initialAccountNames),
+      );
+      localStorage.setItem(
+        localStorageKeys.paymentCategory,
         JSON.stringify(initialPaymentCategories),
       );
-      localStorage.setItem("initialised", JSON.stringify(true));
+      localStorage.setItem(
+        localStorageKeys.transferFrequency,
+        defaultTransferFrequency,
+      );
+      localStorage.setItem(localStorageKeys.initialised, JSON.stringify(true));
     }
     const handler = (e: MediaQueryListEvent) => {
-      const savedMode = localStorage.getItem("localMode");
+      const savedMode = localStorage.getItem(localStorageKeys.localMode);
       const systemPrefersDark = e.matches;
       const currentMode = savedMode
         ? savedMode
@@ -52,7 +64,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("localMode", localMode);
+    localStorage.setItem(localStorageKeys.localMode, localMode);
     if (localMode === "light") {
       document.body.classList.add("light-mode");
     } else {
@@ -83,7 +95,7 @@ function App() {
         </main>
         <footer className="footer">
           <a href="https://github.com/Eunoseer/Budgie">
-            <img src="./github.svg" alt="github"></img>
+            <img src="./github.svg" alt="github" sizes="64px"></img>
             &nbsp;Github - Budgie - 2026
           </a>
         </footer>

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { incomeSchema, Intervals } from "../App";
+import { incomeSchema, Intervals, localStorageKeys } from "../App";
 import { Button } from "./button";
 
 export function IncomeTable() {
   const [data, setData] = useState(() => {
-    const storedData = localStorage.getItem("incomeData");
+    const storedData = localStorage.getItem(localStorageKeys.incomeData);
     const parsedJson = storedData ? JSON.parse(storedData) : [];
     const parsedData = incomeSchema.safeParse(parsedJson);
     if (parsedData.error) {
@@ -94,7 +94,7 @@ export function IncomeTable() {
   };
 
   useEffect(() => {
-    localStorage.setItem("incomeData", JSON.stringify(data));
+    localStorage.setItem(localStorageKeys.incomeData, JSON.stringify(data));
   }, [data]);
 
   return (
@@ -117,6 +117,7 @@ export function IncomeTable() {
                     value={item.description}
                     onChange={(e) => handleTextChange(e, index)}
                     className={index % 2 == 0 ? "table" : "tableAlt"}
+                    aria-label="description"
                   />
                 </td>
                 <td>
@@ -125,6 +126,7 @@ export function IncomeTable() {
                     value={item.frequency}
                     onChange={(e) => handleDropdownChange(e, index)}
                     className={index % 2 == 0 ? "table" : "tableAlt"}
+                    aria-label="frequency"
                   >
                     {Object.values(Intervals).map((interval) => (
                       <option key={interval.name} value={interval.name}>
@@ -139,6 +141,7 @@ export function IncomeTable() {
                     value={item.income ? `$${item.income}` : ""}
                     onChange={(e) => handleIncomeChange(e, index)}
                     className={index % 2 == 0 ? "table" : "tableAlt"}
+                    aria-label="income"
                   />
                 </td>
               </tr>
@@ -147,7 +150,7 @@ export function IncomeTable() {
         <tfoot>
           <tr>
             <td>
-              <Button type="button" onClick={handleAddRow}>
+              <Button type="button" onClick={handleAddRow} aria-label="add row">
                 Add Row
               </Button>
             </td>

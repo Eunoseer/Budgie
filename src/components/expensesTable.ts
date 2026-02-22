@@ -4,21 +4,28 @@ import {
   avgDaysInYear,
   type DataSchemaType,
   getIntervalByName,
+  localStorageKeys,
 } from "../App";
 
 export const getPaymentOptions = (): string[] => {
-  const storedPaymentOptions = localStorage.getItem("paymentCategory");
-  return storedPaymentOptions ? JSON.parse(storedPaymentOptions) : [];
+  const storedPaymentCategoryOptions = localStorage.getItem(
+    localStorageKeys.paymentCategory,
+  );
+  return storedPaymentCategoryOptions
+    ? JSON.parse(storedPaymentCategoryOptions)
+    : [];
 };
 
 export const getAccountNames = (): string[] => {
-  const storedAccountNames = localStorage.getItem("accountName");
+  const storedAccountNames = localStorage.getItem(localStorageKeys.accountName);
   return storedAccountNames ? JSON.parse(storedAccountNames) : [];
 };
 
 export const getTransferFrequency = () => {
-  const transferFrequency = localStorage.getItem("transferFrequency");
-  let interval: IntervalType = Intervals.fortnighty;
+  const transferFrequency = localStorage.getItem(
+    localStorageKeys.transferFrequency,
+  );
+  let interval: IntervalType = Intervals.fortnightly;
   if (transferFrequency) {
     const retrievedinterval = getIntervalByName(transferFrequency);
     interval = retrievedinterval || interval;

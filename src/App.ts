@@ -9,6 +9,16 @@ export const initialPaymentCategories = [
 
 export const initialAccountNames = ["Default"];
 
+export const localStorageKeys = {
+  accountName: "accountName",
+  incomeData: "incomeData",
+  initialised: "initialised",
+  localMode: "localMode",
+  paymentCategory: "paymentCategory",
+  tableData: "tableData",
+  transferFrequency: "transferFrequency",
+} as const;
+
 export const avgDaysInYear = 365.25; //((365 * 3) + 366) / 4;
 
 const intervalSchema = z.object({
@@ -82,7 +92,7 @@ export const getIntervalByName = (name: string) => {
 export const recalculatePerCycleCostsByIntervalName = (
   intervalName: string,
 ) => {
-  const dataString = localStorage.getItem("tableData");
+  const dataString = localStorage.getItem(localStorageKeys.tableData);
   const interval = getIntervalByName(intervalName);
   if (dataString && interval) {
     const data = JSON.parse(dataString);
@@ -91,7 +101,10 @@ export const recalculatePerCycleCostsByIntervalName = (
       parsedData.data.forEach((item) => {
         item.perCycle = item.cost / (avgDaysInYear / interval.days);
       });
-      localStorage.setItem("tableData", JSON.stringify(parsedData.data));
+      localStorage.setItem(
+        localStorageKeys.tableData,
+        JSON.stringify(parsedData.data),
+      );
     } else {
       console.error(parsedData.error);
     }
@@ -100,14 +113,17 @@ export const recalculatePerCycleCostsByIntervalName = (
 
 export const calculateIncomePerTransferCycle = () => {
   const transferCycleName =
-    localStorage.getItem("transferFrequency") || defaultTransferFrequency;
+    localStorage.getItem(localStorageKeys.transferFrequency) ||
+    defaultTransferFrequency;
   const transferCycleInterval = getIntervalByName(transferCycleName);
 
   if (!transferCycleInterval) {
     return;
   }
 
-  const incomeData = JSON.parse(localStorage.getItem("incomeData") || "");
+  const incomeData = JSON.parse(
+    localStorage.getItem(localStorageKeys.incomeData) || "[]",
+  );
   let baseIncome = 0;
 
   const parsedIncomeData = incomeSchema.parse(incomeData);

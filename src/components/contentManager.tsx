@@ -7,6 +7,7 @@ import {
   Intervals,
   recalculatePerCycleCostsByIntervalName,
   defaultTransferFrequency,
+  localStorageKeys,
 } from "../App";
 
 export function ContentManager() {
@@ -14,7 +15,7 @@ export function ContentManager() {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("error");
   const [transferFrequency, setTransferFrequency] = useState(
-    localStorage.getItem("transferFrequency"),
+    localStorage.getItem(localStorageKeys.transferFrequency),
   );
 
   const importConfiguration = () => {
@@ -32,7 +33,7 @@ export function ContentManager() {
 
   const handleTransferChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setTransferFrequency(e.target.value);
-    localStorage.setItem("transferFrequency", e.target.value);
+    localStorage.setItem(localStorageKeys.transferFrequency, e.target.value);
     recalculatePerCycleCostsByIntervalName(e.target.value);
   };
 
@@ -118,10 +119,13 @@ export function ContentManager() {
   const handleReset = () => {
     if (window.confirm("Are you sure you want to reset to defaults?")) {
       localStorage.setItem(
-        "paymentCategory",
+        localStorageKeys.paymentCategory,
         JSON.stringify(initialPaymentCategories),
       );
-      localStorage.setItem("accountName", JSON.stringify(initialAccountNames));
+      localStorage.setItem(
+        localStorageKeys.accountName,
+        JSON.stringify(initialAccountNames),
+      );
 
       //Workaround for the storage event not firing on the same window
       //Yes, it's hacky to not set the old and new value

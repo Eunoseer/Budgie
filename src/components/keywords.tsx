@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 
 import { Button } from "./button";
 import type { keywordTypes } from "./keywords";
+import { localStorageKeys } from "../App";
 
 export function Keywords({
   type,
@@ -18,7 +19,7 @@ export function Keywords({
     try {
       const storedData = localStorage.getItem(type);
       const isInitialised = JSON.parse(
-        localStorage.getItem("initialised") || "false",
+        localStorage.getItem(localStorageKeys.initialised) || "false",
       );
 
       if (!isInitialised) {
