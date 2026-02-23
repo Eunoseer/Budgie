@@ -42,7 +42,6 @@ export function ExpensesTable() {
       initialData = parsedData.data;
     }
 
-    // Build initial localIncomeValues from parsed data
     return initialData.reduce(
       (acc, item) => {
         acc[item.id] = item.cost.toFixed(2);
@@ -112,12 +111,10 @@ export function ExpensesTable() {
       [id]: numericValue,
     }));
 
-    // Clear any existing timeout for this row
     if (timeoutRef.current[id]) {
       clearTimeout(timeoutRef.current[id]);
     }
 
-    // Set new timeout
     timeoutRef.current[id] = window.setTimeout(() => {
       let cost = "";
       // Only allow numbers and an optional decimal value
@@ -150,8 +147,9 @@ export function ExpensesTable() {
   };
 
   const handleAddRow = () => {
+    const id = data ? data.length + 1 : 1;
     const newRow = {
-      id: data ? data.length + 1 : 1,
+      id,
       description: "",
       accountName: "",
       frequency: Intervals.annually.name,
@@ -160,6 +158,12 @@ export function ExpensesTable() {
       paymentCategory: "",
       annual: 0,
     };
+
+    setLocalCostValues((prev) => ({
+      ...prev,
+      [id]: "0",
+    }));
+
     if (!data) {
       setData([newRow]);
       return;

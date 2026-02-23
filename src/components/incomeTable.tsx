@@ -30,7 +30,6 @@ export function IncomeTable() {
       initialData = parsedData.data;
     }
 
-    // Build initial localIncomeValues from parsed data
     return initialData.reduce(
       (acc, item) => {
         acc[item.id] = item.income.toFixed(2);
@@ -86,18 +85,15 @@ export function IncomeTable() {
 
     const id = data[index].id;
 
-    // Update local state immediately
     setLocalIncomeValues((prev) => ({
       ...prev,
       [id]: numericValue,
     }));
 
-    // Clear any existing timeout for this row
     if (timeoutRef.current[id]) {
       clearTimeout(timeoutRef.current[id]);
     }
 
-    // Set new timeout
     timeoutRef.current[id] = window.setTimeout(() => {
       const numericPattern = /^[0-9]*\.?[0-9]*$/;
       let income = "";
