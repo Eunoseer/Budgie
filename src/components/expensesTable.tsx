@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "./button";
 import {
   avgDaysInYear,
@@ -6,6 +6,7 @@ import {
   dataSchema,
   Intervals,
   localStorageKeys,
+  type DataSchemaType,
 } from "../App";
 import {
   getTransferFrequency,
@@ -16,6 +17,7 @@ import {
 } from "./expensesTable.ts";
 
 export function ExpensesTable() {
+  const timeoutRef = useRef<{ [id: number]: number | null }>({});
   const [data, setData] = useState(() => {
     const storedData = localStorage.getItem(localStorageKeys.tableData);
     const parsedJson = storedData ? JSON.parse(storedData) : [];
@@ -28,6 +30,27 @@ export function ExpensesTable() {
   const [transferFrequency] = useState(() => getTransferFrequency());
   const [totalAnnualCost, setTotalAnnualCost] = useState(0);
   const [totalPerCycleCost, setTotalPerCycleCost] = useState(0);
+
+  const [localCostValues, setLocalCostValues] = useState<{
+    [id: number]: string;
+  }>(() => {
+    const storedData = localStorage.getItem(localStorageKeys.incomeData);
+    const parsedJson = storedData ? JSON.parse(storedData) : [];
+    const parsedData = dataSchema.safeParse(parsedJson);
+    let initialData: DataSchemaType = [];
+    if (parsedData.success) {
+      initialData = parsedData.data;
+    }
+
+    // Build initial localIncomeValues from parsed data
+    return initialData.reduce(
+      (acc, item) => {
+        acc[item.id] = item.cost.toFixed(2);
+        return acc;
+      },
+      {} as { [id: number]: string },
+    );
+  });
 
   const incomeValue = calculateIncomePerTransferCycle() || 0;
 
@@ -75,7 +98,7 @@ export function ExpensesTable() {
     index: number,
   ) => {
     const { value } = e.target;
-    let cost = "";
+    const numericValue = value.replace(/^\$/, "");
 
     if (!data) {
       //If you got here, well done!
@@ -84,31 +107,46 @@ export function ExpensesTable() {
 
     const id = data[index].id;
 
-    const numericValue = value.replace(/^\$/, "");
-    // Only allow numbers and an optional decimal value
-    const numericPattern = /^[0-9]*\.?[0-9]*$/;
-    if (numericPattern.test(numericValue)) {
-      cost = numericValue;
-    } else {
-      //In the absence of form validation, handle a user entering a second decimal place gracefully
-      if (numericValue.indexOf(".") !== numericValue.lastIndexOf(".")) {
-        cost = numericValue.slice(0, numericValue.lastIndexOf("."));
+    setLocalCostValues((prev) => ({
+      ...prev,
+      [id]: numericValue,
+    }));
+
+    // Clear any existing timeout for this row
+    if (timeoutRef.current[id]) {
+      clearTimeout(timeoutRef.current[id]);
+    }
+
+    // Set new timeout
+    timeoutRef.current[id] = window.setTimeout(() => {
+      let cost = "";
+      // Only allow numbers and an optional decimal value
+      const numericPattern = /^[0-9]*\.?[0-9]*$/;
+      if (numericPattern.test(numericValue)) {
+        cost = numericValue;
+      } else {
+        //In the absence of form validation, handle a user entering a second decimal place gracefully
+        if (numericValue.indexOf(".") !== numericValue.lastIndexOf(".")) {
+          cost = numericValue.slice(0, numericValue.lastIndexOf("."));
+        }
       }
-    }
-    const frequencyInterval = getFrequencyIntervalByTableRowId(data, id);
-    let annual = 0;
-    if (frequencyInterval) {
-      annual = parseFloat(cost) * (avgDaysInYear / frequencyInterval.days) || 0;
-    }
+      const frequencyInterval = getFrequencyIntervalByTableRowId(data, id);
+      let annual = 0;
+      if (frequencyInterval) {
+        annual =
+          parseFloat(cost) * (avgDaysInYear / frequencyInterval.days) || 0;
+      }
 
-    const perCycle = annual / (avgDaysInYear / transferFrequency.days) || 0;
+      const perCycle = annual / (avgDaysInYear / transferFrequency.days) || 0;
 
-    const updatedData = data.map((item) =>
-      item.id === id ? { ...item, cost, perCycle, annual } : item,
-    );
+      const updatedData = data.map((item) =>
+        item.id === id
+          ? { ...item, cost: parseFloat(cost), perCycle, annual }
+          : item,
+      );
 
-    //TODO come up with a way that I can add decimal places to the form without the type error of cost being a string
-    setData(updatedData);
+      setData(updatedData);
+    }, 100);
   };
 
   const handleAddRow = () => {
@@ -206,7 +244,7 @@ export function ExpensesTable() {
               <td>
                 <input
                   name="cost"
-                  value={item.cost ? `$${item.cost}` : ""}
+                  value={`$${localCostValues[item.id]}`}
                   onChange={(e) => handleCostChange(e, index)}
                   className={index % 2 == 0 ? "table" : "tableAlt"}
                   aria-label="cost"

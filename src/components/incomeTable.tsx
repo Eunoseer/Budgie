@@ -1,8 +1,14 @@
-import { useEffect, useState } from "react";
-import { incomeSchema, Intervals, localStorageKeys } from "../App";
+import { useEffect, useRef, useState } from "react";
+import {
+  incomeSchema,
+  Intervals,
+  localStorageKeys,
+  type IncomeSchemaType,
+} from "../App";
 import { Button } from "./button";
 
 export function IncomeTable() {
+  const timeoutRef = useRef<{ [id: number]: number | null }>({});
   const [data, setData] = useState(() => {
     const storedData = localStorage.getItem(localStorageKeys.incomeData);
     const parsedJson = storedData ? JSON.parse(storedData) : [];
@@ -11,6 +17,27 @@ export function IncomeTable() {
       return undefined;
     }
     return parsedData.data;
+  });
+
+  const [localIncomeValues, setLocalIncomeValues] = useState<{
+    [id: number]: string;
+  }>(() => {
+    const storedData = localStorage.getItem(localStorageKeys.incomeData);
+    const parsedJson = storedData ? JSON.parse(storedData) : [];
+    const parsedData = incomeSchema.safeParse(parsedJson);
+    let initialData: IncomeSchemaType = [];
+    if (parsedData.success) {
+      initialData = parsedData.data;
+    }
+
+    // Build initial localIncomeValues from parsed data
+    return initialData.reduce(
+      (acc, item) => {
+        acc[item.id] = item.income.toFixed(2);
+        return acc;
+      },
+      {} as { [id: number]: string },
+    );
   });
 
   const handleTextChange = (
@@ -50,7 +77,7 @@ export function IncomeTable() {
     index: number,
   ) => {
     const { value } = e.target;
-    let income = "";
+    const numericValue = value.replace(/^\$/, "");
 
     if (!data) {
       //If you got here, well done!
@@ -59,24 +86,40 @@ export function IncomeTable() {
 
     const id = data[index].id;
 
-    const numericValue = value.replace(/^\$/, "");
-    // Only allow numbers and an optional decimal value
-    const numericPattern = /^[0-9]*\.?[0-9]*$/;
-    if (numericPattern.test(numericValue)) {
-      income = numericValue;
-    } else {
-      //In the absence of form validation, handle a user entering a second decimal place gracefully
-      if (numericValue.indexOf(".") !== numericValue.lastIndexOf(".")) {
-        income = numericValue.slice(0, numericValue.lastIndexOf("."));
-      }
+    // Update local state immediately
+    setLocalIncomeValues((prev) => ({
+      ...prev,
+      [id]: numericValue,
+    }));
+
+    // Clear any existing timeout for this row
+    if (timeoutRef.current[id]) {
+      clearTimeout(timeoutRef.current[id]);
     }
 
-    const updatedData = data.map((item) =>
-      item.id === id ? { ...item, income } : item,
-    );
+    // Set new timeout
+    timeoutRef.current[id] = window.setTimeout(() => {
+      const numericPattern = /^[0-9]*\.?[0-9]*$/;
+      let income = "";
 
-    //TODO come up with a way that I can add decimal places to the form without the type error of cost being a string
-    setData(updatedData);
+      if (numericPattern.test(numericValue)) {
+        income = numericValue;
+      } else {
+        if (numericValue.indexOf(".") !== numericValue.lastIndexOf(".")) {
+          income = numericValue.slice(0, numericValue.lastIndexOf("."));
+        }
+      }
+
+      if (!data) {
+        return;
+      }
+
+      const updatedData = data.map((item) =>
+        item.id === id ? { ...item, income: parseFloat(income) } : item,
+      );
+
+      setData(updatedData);
+    }, 100);
   };
 
   const handleAddRow = () => {
@@ -138,8 +181,10 @@ export function IncomeTable() {
                 <td>
                   <input
                     name="income"
-                    value={item.income ? `$${item.income}` : ""}
-                    onChange={(e) => handleIncomeChange(e, index)}
+                    value={`$${localIncomeValues[item.id]}`}
+                    onChange={(e) => {
+                      handleIncomeChange(e, index);
+                    }}
                     className={index % 2 == 0 ? "table" : "tableAlt"}
                     aria-label="income"
                   />
