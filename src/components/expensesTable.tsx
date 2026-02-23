@@ -34,7 +34,7 @@ export function ExpensesTable() {
   const [localCostValues, setLocalCostValues] = useState<{
     [id: number]: string;
   }>(() => {
-    const storedData = localStorage.getItem(localStorageKeys.incomeData);
+    const storedData = localStorage.getItem(localStorageKeys.tableData);
     const parsedJson = storedData ? JSON.parse(storedData) : [];
     const parsedData = dataSchema.safeParse(parsedJson);
     let initialData: DataSchemaType = [];
